@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const movies = require("../web/src/data/movies.json");
+const users = require("../web/src/data/users.json");
 
 // create and config server
 const server = express();
@@ -22,3 +23,19 @@ server.get("/movies", (req, res) => {
   };
   res.json(response);
 });
+
+server.get("/users", (req, res) => {
+  console.log("Petición a la ruta GET /movies");
+  const response = {
+    success: true,
+    movies: movies,
+  };
+  res.json(response);
+});
+
+//escribimos la ruta con ./src porque node busca la carpeta de estáticos desde la raiz del proyecto
+const staticServerPath = "./src/public-react";
+server.use(express.static(staticServerPath));
+
+const staticServerImagesPath = "./src/public-movies-images";
+server.use(express.static(staticServerImagesPath));
