@@ -2,12 +2,14 @@ const express = require("express");
 const cors = require("cors");
 const movies = require("../web/src/data/movies.json");
 const users = require("../web/src/data/users.json");
+const Database = require("better-sqlite3");
+const db = new Database("./src/db/database.db", { verbose: console.log });
 
 // create and config server
 const server = express();
 server.use(cors());
 server.use(express.json());
-server.set('view engine', 'ejs');
+server.set("view engine", "ejs");
 
 // init express aplication
 const serverPort = 4000;
@@ -18,11 +20,16 @@ server.listen(serverPort, () => {
 // Get, obtener datos de la explicación
 server.get("/movies", (req, res) => {
   console.log("Petición a la ruta GET /movies");
-  const response = {
-    success: true,
-    movies: movies,
-  };
-  res.json(response);
+  const query = db.prepare("SELECT * FROM movies");
+  const movies = query.all();
+  console.log(movies);
+  res.json(movies);
+
+  // const response = {
+  //   success: true,
+  //   movies: movies,
+  // };
+  // res.json(response);
 });
 
 // A revisar!
@@ -35,11 +42,11 @@ server.get("/movies", (req, res) => {
 
 // Get, obtener datos de la explicación
 server.get("/movie/:movieId", (req, res) => {
-  const foundMovie = movies.find(movie => movie.id === req.params.movieId);
-  res.render('movie', foundMovie);
+  const query = db.prepare("SELECT * FROM movies WHERE id = ?");
+  const foundMovie = query.get(req.params.movieId);
+  // const foundMovie = movies.find((movie) => movie.id === req.params.movieId);
+  res.render("movie", foundMovie);
 });
-
-
 
 //escribimos la ruta con ./src porque node busca la carpeta de estáticos desde la raiz del proyecto
 const staticServerPath = "./src/public-react";
