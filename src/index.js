@@ -22,8 +22,10 @@ server.get("/movies", (req, res) => {
   console.log("Petición a la ruta GET /movies");
   const query = db.prepare("SELECT * FROM movies");
   const movies = query.all();
-  console.log(movies);
-  res.json(movies);
+  res.json({
+    success: true,
+    movies: movies,
+  });
 
   // const response = {
   //   success: true,
