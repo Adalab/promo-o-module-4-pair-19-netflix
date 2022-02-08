@@ -26,12 +26,6 @@ server.get("/movies", (req, res) => {
     success: true,
     movies: movies,
   });
-
-  // const response = {
-  //   success: true,
-  //   movies: movies,
-  // };
-  // res.json(response);
 });
 
 // A revisar!
@@ -46,7 +40,6 @@ server.get("/movies", (req, res) => {
 server.get("/movie/:movieId", (req, res) => {
   const query = db.prepare("SELECT * FROM movies WHERE id = ?");
   const foundMovie = query.get(req.params.movieId);
-  // const foundMovie = movies.find((movie) => movie.id === req.params.movieId);
   res.render("movie", foundMovie);
 });
 
