@@ -32,12 +32,14 @@ server.post("/login", (req, res) => {
   console.log("Petición a la ruta POST /login");
   const query = db.prepare(
     "SELECT * FROM users WHERE email = ? and password = ?"
+    //usar id en lugar de * ? (revisar bases de datos I, 6. Crear la tabla de usuarias)
   );
   const user = query.get(req.body.email, req.body.password);
   if (user !== undefined) {
     res.json({
       success: true,
       userId: "id_de_la_usuaria_encontrada",
+      //devolver el id
     });
   } else {
     res.json({
