@@ -69,13 +69,31 @@ server.post("/signup", (req, res) => {
   // const query = db.prepare("SELECT * FROM users WHERE email = ?");
   // const result = query.run(req.body.email);
   // res.json(result);
-  const query = db.prepare("INSERT INTO users (email, password) VALUES (?, ?)");
-  const result = query.run(req.body.email, req.body.password);
-  console.log(result);
-  res.json({
-    success: true,
-    userId: result.lastInsertRowid,
-  });
+  const query = db.prepare("SELECT * FROM users WHERE email = ?");
+  const result = query.get(req.body.email);
+  if (result !== undefined) {
+    res.json({
+      success: false,
+      errorMessage: "Usuaria ya existente",
+    });
+  } else {
+    const query = db.prepare(
+      "INSERT INTO users (email, password) VALUES (?, ?)"
+    );
+    const result = query.run(req.body.email, req.body.password);
+    console.log(result);
+    res.json({
+      success: true,
+      userId: result.lastInsertRowid,
+    });
+  }
+  // const query = db.prepare("INSERT INTO users (email, password) VALUES (?, ?)");
+  // const result = query.run(req.body.email, req.body.password);
+  // console.log(result);
+  // res.json({
+  //   success: true,
+  //   userId: result.lastInsertRowid,
+  // });
 });
 
 // Get obtener usuario y película
