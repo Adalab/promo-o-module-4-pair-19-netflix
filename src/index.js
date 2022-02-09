@@ -1,23 +1,26 @@
+// Importamos dependencias, bases de datos etc.
 const express = require("express");
 const cors = require("cors");
 const movies = require("../web/src/data/movies.json");
 const users = require("../web/src/data/users.json");
 const Database = require("better-sqlite3");
-const db = new Database("./src/db/database.db", { verbose: console.log });
 
-// create and config server
+// Indicamos, de cara al servidor, cómo vamos a trabajar:
 const server = express();
 server.use(cors());
 server.use(express.json());
 server.set("view engine", "ejs");
 
-// init express aplication
+// Iniciamos el servidor express:
 const serverPort = 4000;
 server.listen(serverPort, () => {
   console.log(`Server listening at http://localhost:${serverPort}`);
 });
 
-// Get, obtener datos de la explicación
+// Configuramos la base de datos:
+const db = new Database("./src/db/database.db", { verbose: console.log });
+
+// Obtenemos la información de la tabla movies de la base de datos:
 server.get("/movies", (req, res) => {
   console.log("Petición a la ruta GET /movies");
   const query = db.prepare("SELECT * FROM movies");
@@ -28,18 +31,17 @@ server.get("/movies", (req, res) => {
   });
 });
 
+// Para logearse, saber si la usuaria está registrada o no:
 server.post("/login", (req, res) => {
   console.log("Petición a la ruta POST /login");
   const query = db.prepare(
     "SELECT * FROM users WHERE email = ? and password = ?"
-    //usar id en lugar de * ? (revisar bases de datos I, 6. Crear la tabla de usuarias)
   );
   const user = query.get(req.body.email, req.body.password);
   if (user !== undefined) {
     res.json({
       success: true,
-      userId: "id_de_la_usuaria_encontrada",
-      //devolver el id
+      userId: user.id,
     });
   } else {
     res.json({
@@ -49,14 +51,14 @@ server.post("/login", (req, res) => {
   }
 });
 
-// Get, obtener datos de la explicación
+// Renderizamos el detalle de la película usando el motor de plantillas:
 server.get("/movie/:movieId", (req, res) => {
   const query = db.prepare("SELECT * FROM movies WHERE id = ?");
   const foundMovie = query.get(req.params.movieId);
   res.render("movie", foundMovie);
 });
 
-// POST, registro de nuevas usuarias en el back
+// Resgistramos nuevas usuarias (comprobando si aún no lo están) y las añadimos a la base de datos:
 server.post("/signup", (req, res) => {
   const query = db.prepare("SELECT * FROM users WHERE email = ?");
   const result = query.get(req.body.email);
@@ -78,7 +80,7 @@ server.post("/signup", (req, res) => {
   }
 });
 
-// Get obtener usuario y película
+// Obtener de la base de datos la relación entre usuarias y películas:
 server.get("/user/movies", (req, res) => {
   const query = db.prepare("SELECT * FROM rel_movies_users WHERE id = ?");
   const result = query.get(req.header("user-id"));
@@ -88,7 +90,7 @@ server.get("/user/movies", (req, res) => {
   });
 });
 
-//escribimos la ruta con ./src porque node busca la carpeta de estáticos desde la raiz del proyecto
+// Servidores de estáticos:
 const staticServerPath = "./src/public-react";
 server.use(express.static(staticServerPath));
 
