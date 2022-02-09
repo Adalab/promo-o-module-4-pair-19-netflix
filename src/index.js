@@ -49,14 +49,6 @@ server.post("/login", (req, res) => {
   }
 });
 
-// A revisar!
-// server.post("/users", (req, res) => {
-//   console.log("req.body");
-//   const reponseUsers = users.find(users => users.id === requestParamsId);
-//   };
-//   res.json(response);
-// });
-
 // Get, obtener datos de la explicación
 server.get("/movie/:movieId", (req, res) => {
   const query = db.prepare("SELECT * FROM movies WHERE id = ?");
@@ -66,9 +58,6 @@ server.get("/movie/:movieId", (req, res) => {
 
 // POST, registro de nuevas usuarias en el back
 server.post("/signup", (req, res) => {
-  // const query = db.prepare("SELECT * FROM users WHERE email = ?");
-  // const result = query.run(req.body.email);
-  // res.json(result);
   const query = db.prepare("SELECT * FROM users WHERE email = ?");
   const result = query.get(req.body.email);
   if (result !== undefined) {
@@ -87,13 +76,6 @@ server.post("/signup", (req, res) => {
       userId: result.lastInsertRowid,
     });
   }
-  // const query = db.prepare("INSERT INTO users (email, password) VALUES (?, ?)");
-  // const result = query.run(req.body.email, req.body.password);
-  // console.log(result);
-  // res.json({
-  //   success: true,
-  //   userId: result.lastInsertRowid,
-  // });
 });
 
 // Get obtener usuario y película
